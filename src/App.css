@@ -109,7 +109,8 @@ h1 {
   margin-top: 3rem;
 
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
+  /* 改成默认左侧初始化 */
   align-items: center;
   flex-wrap: wrap;
 }
