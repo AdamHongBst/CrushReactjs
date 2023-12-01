@@ -1,30 +1,25 @@
-import { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
+import MovieCard from "./movieCard";
+import SearchIcon from "./search.svg";
 import "./App.css";
-import searchIcon from "./search.svg";
 
-const API_URL = "http://www.omdbapi.com/?apikey=b40402c1&";
-
-const movie1 = {
-  Title: "Batman v Superman: Dawn of Justice",
-  Year: "2016",
-  imdbID: "tt2975590",
-  Type: "movie",
-  Poster:
-    "https://m.media-amazon.com/images/M/MV5BYThjYzcyYzItNTVjNy00NDk0LTgwMWQtYjMwNmNlNWJhMzMyXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg",
-};
+const API_URL = "http://www.omdbapi.com?apikey=b6003d8a";
 
 const App = () => {
-  const searchMovie = async (title) => {
-    const response = await fetch(`${API_URL}&S=${title}`);
-    const data = await response.json();
-
-    console.log(data.Search);
-  };
+  const [searchTerm, setSearchTerm] = useState("");
+  const [movies, setMovies] = useState([]);
 
   useEffect(() => {
-    searchMovie("Superman");
+    searchMovies("Batman");
   }, []);
+
+  const searchMovies = async (title) => {
+    const response = await fetch(`${API_URL}&s=${title}`);
+    const data = await response.json();
+
+    setMovies(data.Search);
+  };
 
   return (
     <div className="app">
@@ -32,34 +27,28 @@ const App = () => {
 
       <div className="search">
         <input
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Search for movies"
-          value="Superman"
-          onChange={() => {}}
         />
-        <img src={searchIcon} alt="search" onClick={() => {}} />
+        <img
+          src={SearchIcon}
+          alt="search"
+          onClick={() => searchMovies(searchTerm)}
+        />
       </div>
 
-      <div className="container">
-        <div className="movie">
-          <div>
-            <p>{movie1.Year}</p>
-          </div>
-          <div>
-            <img
-              src={
-                movie1.Poster !== "N/A"
-                  ? movie1.Poster
-                  : "https://via.placeholder.com/400"
-              }
-            ></img>
-          </div>
-          <div>
-            <span>{movie1.Type}</span>
-            <h3>{movie1.Title}</h3>
-          </div>
+      {movies?.length > 0 ? (
+        <div className="container">
+          {movies.map((movie) => (
+            <MovieCard key={movie.imdbID} movie={movie} />
+          ))}
         </div>
-      </div>
-      
+      ) : (
+        <div className="empty">
+          <h2>No movies found</h2>
+        </div>
+      )}
     </div>
   );
 };
